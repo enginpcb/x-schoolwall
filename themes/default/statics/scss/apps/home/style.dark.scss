@@ -1,0 +1,104 @@
+// @*************************************************************************@
+// @ @author 松果商城									 @
+// @ @author_url 1: https://www.pineal.cn/                      @
+// @ @author_url 2: https://www.pineal.cn/goods/lists                     @
+// @ @author_email: 18581281315@163l.com                                @
+// @*************************************************************************@
+// @ 松果商城- The Ultimate Modern Social Media Sharing Platform           @
+// @ Copyright (c) 21.05.2021 松果商城All rights reserved.                @
+// @*************************************************************************@
+
+@import '../main-variables';
+
+body.cl-app-home{
+	main.main-content-container{
+		div.main-content-container-inner{
+			div.timeline-container{
+				div.main-timeline-pubbox-wrapper{
+					border-color: $dark_border;
+				}
+
+				div.timeline-swifts-holder{
+					border-color: $dark_border;
+					background: $dark_bg;
+
+					div.timeline-swifts-cr{
+						&.owl-carousel{
+							div.owl-stage-outer{
+								div.owl-stage{
+									div.owl-item{
+										div.swift-item{
+											div.swift-item-body{
+												div.avatar{
+													border-color: $dark_border;
+
+													img{
+														border-color: $dark_bg;
+													}
+												}
+											}
+
+											div.swift-item-footer{
+												span{
+													color: $dark_grey;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				div.empty-user-timeline{
+					div.pl-message{
+						h4{
+							color: #fff;
+						}
+
+						p{
+							color: $dark_border;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	div.modal.modal-swift-pubbox{
+		div.modal-body{
+			form{
+
+				div.preview-image-holder{
+					div.preview-image-inner{
+						border-color: $dark_border;
+					}
+				}
+
+				div.preview-video-holder{
+					div.video-player{
+						border-color: $dark_border;
+					}
+				}
+
+				div.swift-ctrls-holder{
+					button.ctrl-item{
+						&.text-length{
+							small{
+								color: $dark_grey;
+							} 
+						}
+					}
+				}
+
+				div.emojionearea{
+					background: transparent;
+					div.emojionearea-editor{
+						color: #fff;
+					}
+				}
+			}
+		}
+	}
+}

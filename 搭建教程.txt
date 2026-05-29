@@ -1,0 +1,27 @@
+----------4月14日更新----------
+1.前台上传不了视频（感谢葫芦侠上的大佬[陌路人]的解答）
+宝塔->软件商店->已安装->PHP7.2（对应你使用的版本）->禁用函数->删除exec
+
+----------4月15日更新----------
+2.上传大视频／大图片失败
+①宝塔->软件商店->已安装->PHP7.３->上传限制->改成10240->保存->超时限制->改成3600->保存->服务->重启PHP7.3
+②宝塔->软件商店->已安装->Nginx1.20->性能调整->最大上传文件改成10240->连接超时时间改成3600->保存->服务->重启Nginx1.20
+
+3.前台上传视频没有缩略图
+①删除根目录/core/libs中的ffmpeg文件夹
+②SSH连接服务器
+③按以下顺序运行命令（记得修改第4行和第8行的域名，不含http://,例如：www.baidu.com）
+wget http://www.ffmpeg.org/releases/ffmpeg-3.1.tar.gz
+tar -zxvf ffmpeg-3.1.tar.gz 
+cd ffmpeg-3.1
+./configure --prefix=/www/wwwroot/dslzf.wamz.cf/core/libs/ffmpeg
+make && make install
+vi /etc/profile
+按i健进入编辑模式，在最后一行输入
+export PATH=$PATH:/www/wwwroot/dslzf.wamz.cf/core/libs/ffmpeg/bin
+按ESC键
+按shift+：
+输入wq回车
+source /etc/profile
+ffmpeg -version
+④进入网站管理面板->设置->FFMPEG 二进制->把路径后面的.exe去掉->保存更改

@@ -1,0 +1,125 @@
+// @*************************************************************************@
+// @ @author 松果商城									 @
+// @ @author_url 1: https://www.pineal.cn/                      @
+// @ @author_url 2: https://www.pineal.cn/goods/lists                     @
+// @ @author_email: 18581281315@163l.com                                @
+// @*************************************************************************@
+// @ 松果商城- The Ultimate Modern Social Media Sharing Platform           @
+// @ Copyright (c) 21.05.2021 松果商城All rights reserved.                @
+// @*************************************************************************@
+
+@import '../main-variables';
+
+body.cl-app-suggested{
+	main.main-content-container {
+		div.main-content-container-inner {
+			div.timeline-container{
+				div.suggested--people-list-container{
+					width: 100%;
+					line-height: 0px;
+					display: block;
+
+					div.suggested-list{
+						width: 100%;
+						line-height: 0px;
+						display: block;
+						padding: 0;
+
+						div.suggested-list-item{
+							width: 100%;
+							display: flex;
+							flex-direction: row;
+							flex-wrap: nowrap;
+							line-height: 0px;
+							border-bottom: 1px solid $border;
+							padding: 10px 15px;
+
+							&:first-child{
+								padding-top: 20px;
+							}
+
+							div.avatar{
+								width: 40px;
+								height: 40px;
+								overflow: hidden;
+								min-width: 40px;
+								max-width: 40px;
+								border-radius: 10em;
+
+								img{
+									width: 100%;
+									height: 100%;
+									object-fit: cover;
+								}
+							}
+
+							div.user-info-holder{
+					 			flex: 1;
+					 			padding: 0 0 0 10px;
+					 			line-height: 0px;
+					 			position: relative;
+
+					 			h4{
+					 				font-size: 13px;
+					 				padding: 0;
+					 				margin: 0;
+					 				line-height: 13px;
+					 				font-weight: 700;
+					 				color: $black;
+					 				white-space: nowrap;
+					 			}
+
+					 			a{
+					 				display: block;
+					 				text-decoration: none;
+					 				color: $grey;
+					 				font-size: 13px;
+					 				line-height: 20px;
+					 				overflow: hidden;
+					 				white-space: nowrap;
+					 				text-overflow: ellipsis;
+					 				max-width: 140px;
+					 			}
+
+					 			p{
+					 				font-size: 13px;
+					 				line-height: 18px;
+					 				padding: 0;
+					 				margin: 5px 0 0 0;
+					 				padding-right: 40px;
+					 				word-wrap: break-word;
+					 				max-width: 100%;
+					 				overflow: hidden;
+					 				word-break: break-all;
+					 			}
+
+					 			button{
+					 				position: absolute;
+					 				right: 0;
+					 				top: 0;
+					 			}
+					 		}
+
+					 		&:hover,&:active{
+					 			background: $el_hovbg;
+					 		}
+						}
+					}
+
+					div.load-more{
+						width: 100%;
+						display: block;
+						line-height: 0;
+						padding: 20px;
+						text-align: center;
+
+						button{
+							padding-left: 30px;
+							padding-right: 30px;
+						}
+					}
+				}
+			}
+		}
+	}
+}
