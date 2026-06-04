@@ -1,0 +1,31 @@
+// @*************************************************************************@
+// @ @author 松果商城									 @
+// @ @author_url 1: https://www.pineal.cn/                      @
+// @ @author_url 2: https://www.pineal.cn/goods/lists                     @
+// @ @author_email: 18581281315@163l.com                                @
+// @*************************************************************************@
+// @ 松果商城- The Ultimate Modern Social Media Sharing Platform           @
+// @ Copyright (c) 21.05.2021 松果商城All rights reserved.                @
+// @*************************************************************************@
+
+@import '../main-variables';
+
+body.cl-app-err404{
+	main.main-content-container {
+		div.main-content-container-inner {
+			div.timeline-container{
+				div.err404-page-not-found{
+					div.pl-message{
+						h4{
+							color: #fff;
+						}
+
+						p{
+							color: $dark_grey;
+						}
+					}
+				}
+			}
+		}
+	}
+}

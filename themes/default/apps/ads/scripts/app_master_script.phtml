@@ -1,0 +1,393 @@
+<?php if ($cl["page_tab"] == 'upsert'): ?>
+	<script>
+		"use strict";
+
+		jQuery(document).ready(function($) {
+			// 注册Vuelidate验证插件
+			Vue.use(window.vuelidate.default);
+
+			// 获取广告应用根元素
+			var _app           = $('[data-app="advertisements"]');
+			// 引入Vuelidate内置验证器
+			var vue_validators = window.validators;
+			
+			/**
+			 * 广告创建/编辑页面Vue应用实例
+			 * 功能：处理广告表单验证、国家选择、封面上传、表单提交等操作
+			 */
+			var SMCAdsUpsert   = new Vue({
+				el: "#vue-ads-upsert-app",
+				// 应用数据
+				data: {
+					ad_data: <?php echo cl_minify_js(json($cl['ad_data'], 1)); ?>, // 广告数据（从后端传入，编辑时为已有数据，新增时为默认空数据）
+					tos_agree: false, // 是否同意服务条款
+					submitting: false, // 表单提交状态（防止重复提交）
+					sdds: { // 静态下拉数据（Static Dropdown Data）
+						countries: <?php echo cl_minify_js(json($cl['countries_ls'], 1)); ?>, // 国家列表（键为国家ID，值为国家名称）
+						status: { // 广告状态翻译
+							active: "<?php echo cl_translate('Active'); ?>",
+							inactive: "<?php echo cl_translate('Inactive'); ?>"
+						}
+					},
+					fb:{ // 表单反馈（Form Feedback）
+						ss: {}, // 服务器端错误（暂未使用）
+						cs: { // 客户端验证错误信息
+							company: "", // 公司名称错误
+							target_url: "", // 目标URL错误
+							description: "", // 广告描述错误
+							cta: "" // 行动号召错误
+						}
+					}
+				},
+				// 计算属性
+				computed: {
+					// 公司名称是否验证失败
+					is_invalid_company: function() {
+						if (this.$v.ad_data.company.required && this.$v.ad_data.company.$invalid) {
+							// 设置错误信息
+							this.fb.cs.company = "<?php echo cl_translate("The entered company name is too long. Max length 115 characters!"); ?>";
+							return true;
+						}
+						else {
+							// 清除错误信息
+							this.fb.cs.company = "";
+							return false;
+						}
+					},
+					// 目标URL是否验证失败
+					is_invalid_target_url: function() {
+						if (this.$v.ad_data.target_url.required && this.$v.ad_data.target_url.$invalid) {
+							this.fb.cs.target_url = "<?php echo cl_translate("The target url you entered does not match the format"); ?>";
+							return true;
+						}
+						else {
+							this.fb.cs.target_url = "";
+							return false;
+						}
+					},
+					// 广告描述是否验证失败
+					is_invalid_description: function() {
+						if (this.$v.ad_data.description.required && this.$v.ad_data.description.$invalid) {
+							this.fb.cs.description = "<?php echo cl_translate("The entered ad description is too long. Max length 550 characters!"); ?>";
+							return true;
+						}
+						else {
+							this.fb.cs.description = "";
+							return false;
+						}
+					},
+					// 行动号召(CTA)是否验证失败
+					is_invalid_cta: function() {
+						if (this.$v.ad_data.cta.required && this.$v.ad_data.cta.$invalid) {
+							this.fb.cs.cta = "<?php echo cl_translate("Too long cta of the campaign entered. The maximum length is 290 characters!"); ?>";
+							return true;
+						}
+						else {
+							this.fb.cs.cta = "";
+							return false;
+						}
+					},
+					// 表单整体是否验证失败（禁用提交按钮）
+					is_invalid_form: function() {
+						// 1. 表单字段验证失败
+						if (this.$v.ad_data.$invalid == true) {
+							return true;
+						}
+						// 2. 未同意服务条款
+						else if(this.tos_agree != true) {
+							return true;
+						}
+						// 3. 未上传封面图（代码中已注释，暂时不验证）
+						else if(SMColibri.isURL(this.ad_data.cover) != true && 0) {
+							return true;
+						}
+						// 4. 未选择任何目标国家
+						else if(this.ad_data.audience.length < 1) {
+							return true;
+						}
+						// 5. 广告状态为"孤儿"（临时未保存状态）
+						else if(this.ad_data.status == 'orphan') {
+							return true;
+						}
+						// 所有验证通过
+						else {
+							return false;
+						}
+					},
+					// 是否全选了所有国家（共236个国家）
+					is_audience_all_selected: function() {
+						if (this.ad_data.audience.length == 236) {
+							return true;
+						}
+					}
+				},
+				// Vuelidate表单验证规则
+				validations: {
+					ad_data: {
+						company: { // 公司名称：必填，1-115字符
+							required: vue_validators.required,
+							min_length: vue_validators.minLength(1),
+							max_length: vue_validators.maxLength(115)
+						},
+						target_url: { // 目标URL：必填，URL格式，最长1100字符
+							required: vue_validators.required,
+							is_url: vue_validators.url,
+							max_length: vue_validators.maxLength(1100)
+						},
+						description: { // 广告描述：必填，1-550字符
+							required: vue_validators.required,
+							min_length: vue_validators.minLength(1),
+							max_length: vue_validators.maxLength(550)
+						},
+						cta: { // 行动号召：必填，1-290字符
+							required: vue_validators.required,
+							min_length: vue_validators.minLength(1),
+							max_length: vue_validators.maxLength(290)
+						}
+					}
+				},
+				// 应用方法
+				methods: {
+					/**
+					 * 选择/取消选择单个国家
+					 * @param {number} country_id 国家ID
+					 */
+					select_audience: function(country_id = false) {
+						if ($.isNumeric(country_id)) {
+							var _app_ = this;
+
+							// 如果已选择则移除，否则添加
+							if (_app_.ad_data.audience.contains(country_id)) {
+								_app_.ad_data.audience.rmItem(country_id);
+							}
+							else {
+								_app_.ad_data.audience.push(country_id);
+							}
+						}
+					},
+					/**
+					 * 全选/取消全选所有国家
+					 * @param {Event} e 复选框点击事件
+					 */
+					select_audience_all: function(e = false) {
+						if ($(e.target).prop('checked')) {
+							// 全选：将所有国家ID添加到audience数组
+							var _app_              = this;
+							_app_.ad_data.audience = [];
+
+							$.each(_app_.sdds.countries, function(index, val) {
+								_app_.ad_data.audience.push(index);
+							});
+						}
+						else {
+							// 取消全选：清空audience数组
+							var _app_              = this;
+							_app_.ad_data.audience = [];
+						}
+					},
+					/**
+					 * 取消全选所有国家（暂未实现）
+					 */
+					deselect_audience_all: function() {
+
+					},
+					/**
+					 * 触发封面图文件选择框
+					 */
+					select_cover: function() {
+						_app.find('input[data-an="cover-input"]').trigger('click');
+					},
+					/**
+					 * 上传广告封面图
+					 * @param {Event} _self 文件选择事件
+					 */
+					upload_cover: function(_self = null) {
+						var _app_        = this;
+						var event        = _self;
+						var form_data    = new FormData();
+						_app_.submitting = true; // 标记为提交中，防止重复操作
+						
+						// 构建表单数据
+						form_data.append('ad_id', _app_.ad_data.id); // 广告ID
+						form_data.append('cover', event.target.files[0]); // 封面图文件
+						form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>"); // CSRF令牌
+						
+						// 显示上传进度条
+						SMColibri.upload_progress_bar('show', "<?php echo cl_translate('Uploading cover image'); ?>");
+
+						// AJAX上传文件
+						$.ajax({
+							url: '<?php echo cl_link("native_api/ads/upload_ad_cover"); ?>', // 上传接口地址
+							type: 'POST',
+							dataType: 'json',
+							enctype: 'multipart/form-data',
+							data: form_data,
+							cache: false,
+					        contentType: false, // 不设置Content-Type头（由浏览器自动设置）
+					        processData: false, // 不处理数据（保持FormData格式）
+					        timeout: 600000, // 超时时间10分钟
+							success: function(data) {
+								if (data.status == 200) {
+									// 上传成功，更新封面图URL
+									_app_.ad_data.cover = data.url;
+								}
+								else {
+									// 上传失败，显示错误提示
+									SMColibri.errorMSG();
+								}
+							},
+							complete: function() {
+								// 上传完成，重置提交状态
+								_app_.submitting = false;
+
+								// 延迟隐藏进度条（提升用户体验）
+								setTimeout(function() {
+									SMColibri.upload_progress_bar('end');
+								}, 1500);
+
+								// 清空文件输入框，允许重复上传同一文件
+								_app.find('input[data-an="cover-input"]').val('');
+							}
+						});
+					},
+					/**
+					 * 提交广告表单
+					 * @param {Event} _self 表单提交事件
+					 */
+					submit_form: function(_self = false) {
+						_self.preventDefault(); // 阻止表单默认提交行为
+
+						let _app_     = this;
+						let form_data = _app_.form_data(); // 获取表单数据
+
+						// 使用jQuery表单插件提交表单
+						$(_self.target).ajaxSubmit({
+							url: "<?php echo cl_link("native_api/ads/save_ad_data"); ?>", // 保存接口地址
+							type: 'POST',
+							dataType: 'json',
+							data: form_data,
+							beforeSend: function() {
+								_app_.submitting = true; // 标记为提交中
+							},
+							success: function(data) {
+								if (data.status == 200) {
+									// 保存成功，显示提示信息
+									<?php if ($cl['ad_data']['status'] == 'orphan'): ?>
+										// 新增广告成功
+										cl_bs_notify("<?php echo cl_translate('Your new ad has been successfully created. Please wait..'); ?>");
+									<?php else: ?>
+										// 编辑广告成功
+										cl_bs_notify("<?php echo cl_translate('Your changes have been saved successfully!'); ?>");
+									<?php endif; ?>
+
+									// 根据广告状态跳转到对应页面
+									if (form_data.status == 'active') {
+										// 激活状态跳转到广告列表
+										SMColibri.spa_load("<?php echo cl_link('ads'); ?>");
+									}
+									else {
+										// 非激活状态跳转到存档列表
+										SMColibri.spa_load("<?php echo cl_link('ads/archive'); ?>");
+									}
+								}
+								else {
+									// 保存失败，重置提交状态并显示错误
+									_app_.submitting = false;
+									SMColibri.errorMSG();
+								}
+							}
+						});
+					},
+					/**
+					 * 生成提交的表单数据
+					 * @returns {Object} 包含所有广告字段的表单数据对象
+					 */
+					form_data: function() {
+						let _app_ = this;
+						let data  = Object({
+							ad_id: "<?php echo fetch_or_get($cl['ad_data']['id'], '0'); ?>", // 广告ID（新增时为0）
+							hash: "<?php echo fetch_or_get($cl['csrf_token'], 'none'); ?>", // CSRF令牌
+							company: _app_.ad_data.company, // 公司名称
+							target_url: _app_.ad_data.target_url, // 目标URL
+							status: _app_.ad_data.status, // 广告状态
+							audience: _app_.ad_data.audience, // 目标国家列表
+							description: _app_.ad_data.description, // 广告描述
+							cta: _app_.ad_data.cta // 行动号召
+						});
+
+						return data;
+					}
+				}
+			});
+		});
+	</script>
+<?php else: ?>
+	<script>
+		"use strict";
+
+		jQuery(document).ready(function($) {
+			// 获取广告应用根元素
+			var _app          = $('[data-app="advertisements"]');
+			
+			/**
+			 * 广告列表页面操作对象
+			 * 目前实现：删除广告功能
+			 */
+			var SMCAccountAds = Object({
+				/**
+				 * 删除广告
+				 * @param {number} id 广告ID
+				 */
+				delete: function(id = false) {
+					if ($.isNumeric(id) && id) {
+			        	// 显示确认删除弹窗
+			        	var promise = SMColibri.confirm_action({
+							btn_1: "<?php echo cl_translate("Cancel"); ?>", // 取消按钮
+							btn_2: "<?php echo cl_translate("Delete"); ?>", // 删除按钮
+							title: "<?php echo cl_translate("Please confirm your actions!"); ?>", // 弹窗标题
+							message: "<?php echo cl_translate("Please note that if you delete this ad? Please note that this action cannot be undone!"); ?>", // 提示信息
+						});
+
+						// 用户确认删除
+						promise.done(function() {
+							// 发送删除请求
+							$.ajax({
+								url: '<?php echo cl_link("native_api/ads/delete_ad"); ?>', // 删除接口地址
+								type: 'POST',
+								dataType: 'json',
+								data: {id: id}, // 广告ID
+							}).done(function(data) {
+								if (data.status != 200) {
+									// 删除失败，显示错误
+									SMColibri.errorMSG();
+								}
+								else {
+									// 删除成功，显示提示并刷新页面
+									cl_bs_notify("<?php echo cl_translate("Your ad has been successfully deleted! Please wait..."); ?>", 1500);
+									
+									// 延迟2秒后刷新SPA页面
+									setTimeout(function() {
+										SMColibri.spa_reload();
+									}, 2000);
+								}
+							}).always(function() {
+								// 无论成功失败，都隐藏确认弹窗
+								$("div.confirm-actions-modal").modal("hide");
+							});
+				        });
+
+						// 用户取消删除
+						promise.fail(function() {
+				            $("div.confirm-actions-modal").modal("hide");
+				        });
+					}
+				}
+			});
+
+			// 将操作对象挂载到window，供全局调用
+			if (window.SMCAccountAds == undefined) {
+				window.SMCAccountAds = SMCAccountAds;
+			}
+		});
+	</script>
+<?php endif; ?>

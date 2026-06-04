@@ -1,0 +1,13 @@
+{
+  "update": {
+    "versionCode": 2,
+    "versionName": "1.2.1",
+    "title": "版本更新",
+    "content": "本次更新内容：1. 优化应用启动速度\n2. 提升用户界面流畅度\n3.修复部分机型闪退\n4.增加视频播放全屏功能",
+    "downloadUrl": "https://www.ntvu.cn/apk/1.2.1.apk",
+    "fileSize": 15728640,
+    "fileSizeText": "11.1 MB",
+    "date":"20260601",
+    "notice": "本次更新修复了多项重要问题，建议所有用户尽快升级"
+  }
+}

@@ -1,0 +1,59 @@
+<script>
+$(window).on('load', function(){
+    // 地域饼图
+    const areaData = {
+        labels: <?php echo json_encode(array_column($cl['area_stats'] ?? [], 'province')); ?>,
+        datasets: [{
+            data: <?php echo json_encode(array_column($cl['area_stats'] ?? [], 'cnt')); ?>,
+            backgroundColor: [
+                '#36a2eb','#4bc0c0','#ffce56','#9966ff','#ff9f40',
+                '#ff6384','#8e5ea2','#3cba9f','#e8c3b9','#c45850'
+            ]
+        }]
+    };
+    new Chart($("#areaChart"), { type:'pie', data:areaData });
+
+    // 客户端访问量 PV 柱状图
+    var ctxClient = document.getElementById('clientChart').getContext('2d');
+    new Chart(ctxClient, {
+        type: 'bar',
+        data: {
+            labels: ['职大APP', '微信', 'QQ', '浏览器', '其他'],
+            datasets: [{
+                label: '访问次数',
+                data: [
+                    <?php echo $cl['client_stats']['app'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['wx'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['qq'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['browser'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['other'] ?? 0; ?>
+                ],
+                backgroundColor: ['#36a2eb','#4bc0c0','#ffce56','#9966ff','#ff9f40']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero:true } } }
+    });
+
+    // 客户端独立用户 UV 柱状图
+    var ctxUV = document.getElementById('clientUVChart').getContext('2d');
+    new Chart(ctxUV, {
+        type: 'bar',
+        data: {
+            labels: ['职大APP', '微信', 'QQ', '浏览器', '其他'],
+            datasets: [{
+                label: '独立用户',
+                data: [
+                    <?php echo $cl['client_stats']['app_uv'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['wx_uv'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['qq_uv'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['browser_uv'] ?? 0; ?>,
+                    <?php echo $cl['client_stats']['other_uv'] ?? 0; ?>
+                ],
+                backgroundColor: '#ff6384'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero:true } } }
+    });
+    $('.count-to').countTo();
+});
+</script>

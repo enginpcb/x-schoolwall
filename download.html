@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>职大校园墙 - 官方下载</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: system-ui, sans-serif; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        /* 数字跳动动画 */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .count-animate { animation: countUp 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-white text-gray-800 min-h-screen">
+
+<!-- 顶部下载区域（动态切换） -->
+<div id="downloadArea" class="px-4 pt-6 pb-4"></div>
+
+<!-- 标题 -->
+<div class="px-4 pt-2 text-center">
+    <h1 class="text-2xl font-bold">职大学生专属校园平台</h1>
+    <p class="text-sm text-gray-600 mt-2">
+        失物招领、交友脱单、校园资讯、二手交易、表白投稿
+    </p>
+</div>
+
+<!-- 三张APP截图 -->
+<div class="mt-6 px-2">
+    <div class="overflow-x-auto scrollbar-hide">
+        <div class="flex gap-4 px-2 py-2 min-w-max">
+            <div class="w-[180px] flex-shrink-0">
+                <div class="bg-white p-1 rounded-2xl border border-gray-200 shadow-md">
+                    <img src="assets/img/1.jpg" alt="APP截图1" class="rounded-xl w-full">
+                </div>
+            </div>
+            <div class="w-[180px] flex-shrink-0">
+                <div class="bg-white p-1 rounded-2xl border border-gray-200 shadow-md">
+                    <img src="assets/img/2.jpg" alt="APP截图2" class="rounded-xl w-full">
+                </div>
+            </div>
+            <div class="w-[180px] flex-shrink-0">
+                <div class="bg-white p-1 rounded-2xl border border-gray-200 shadow-md">
+                    <img src="assets/img/3.jpg" alt="APP截图3" class="rounded-xl w-full">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 功能介绍 -->
+<div class="mt-8 px-4 pb-10">
+    <h2 class="text-lg font-bold text-center mb-4">核心功能</h2>
+    <div class="grid grid-cols-1 gap-3">
+        <div class="p-4 border border-gray-200 rounded-xl">
+            <div class="text-blue-600 text-lg mb-1"><i class="fa fa-bullhorn"></i></div>
+            <div class="font-medium text-sm">校园投稿</div>
+            <div class="text-xs text-gray-500">表白、求助、寻物、吐槽一键发布</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl">
+            <div class="text-blue-600 text-lg mb-1"><i class="fa fa-users"></i></div>
+            <div class="font-medium text-sm">同校交友</div>
+            <div class="text-xs text-gray-500">认识更多同学，拓展校园人脉</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl">
+            <div class="text-blue-600 text-lg mb-1"><i class="fa fa-newspaper-o"></i></div>
+            <div class="font-medium text-sm">校园资讯</div>
+            <div class="text-xs text-gray-500">活动通知、兼职考试信息一手掌握</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl">
+            <div class="text-blue-600 text-lg mb-1"><i class="fa fa-shield"></i></div>
+            <div class="font-medium text-sm">学生认证</div>
+            <div class="text-xs text-gray-500">本校专属认证，社区更安全纯净</div>
+        </div>
+    </div>
+</div>
+
+<!-- 平台统计数据 -->
+<div class="mt-2 px-4 pb-8">
+    <h2 class="text-lg font-bold text-center mb-4">平台实时数据</h2>
+    <div class="grid grid-cols-2 gap-3">
+        <div class="p-4 border border-gray-200 rounded-xl text-center shadow-sm">
+            <div class="text-blue-600 text-2xl mb-1"><i class="fa fa-eye"></i></div>
+            <div class="text-2xl font-bold count-animate" id="totalVisits">0</div>
+            <div class="text-xs text-gray-500 mt-1">总访问量</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl text-center shadow-sm">
+            <div class="text-green-600 text-2xl mb-1"><i class="fa fa-calendar-o"></i></div>
+            <div class="text-2xl font-bold count-animate" id="todayVisits">0</div>
+            <div class="text-xs text-gray-500 mt-1">今日访问</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl text-center shadow-sm">
+            <div class="text-orange-600 text-2xl mb-1"><i class="fa fa-download"></i></div>
+            <div class="text-2xl font-bold count-animate" id="totalDownloads">0</div>
+            <div class="text-xs text-gray-500 mt-1">总下载量</div>
+        </div>
+        <div class="p-4 border border-gray-200 rounded-xl text-center shadow-sm">
+            <div class="text-purple-600 text-2xl mb-1"><i class="fa fa-calendar-check-o"></i></div>
+            <div class="text-2xl font-bold count-animate" id="todayDownloads">0</div>
+            <div class="text-xs text-gray-500 mt-1">今日下载</div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部 -->
+<div class="py-4 text-center text-xs text-gray-400 border-t border-gray-100">
+    © 2026 职大校园墙 版权所有
+</div>
+
+<script>
+// 下载链接
+const APK_URL = 'https://www.ntvu.cn/apk/1.2.1.apk';
+// 本地存储统计数据的键名
+const STORAGE_KEY = 'ntvu_campus_wall_stats';
+
+// ==================== 统计核心函数 ====================
+// 生成唯一访客ID（用于独立访客统计）
+function generateVisitorId() {
+    return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
+}
+
+// 获取今日日期（YYYY-MM-DD格式，用于每日数据重置）
+function getTodayDate() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+// 初始化统计数据（自动处理跨天重置）
+function initStats() {
+    const today = getTodayDate();
+    let stats = localStorage.getItem(STORAGE_KEY);
+    
+    if (!stats) {
+        // 首次访问初始化默认数据
+        stats = {
+            totalVisits: 0,
+            todayVisits: 0,
+            lastVisitDate: today,
+            totalDownloads: 0,
+            todayDownloads: 0,
+            uniqueVisitors: 0,
+            visitorId: generateVisitorId()
+        };
+    } else {
+        stats = JSON.parse(stats);
+        
+        // 跨天自动重置今日数据
+        if (stats.lastVisitDate !== today) {
+            stats.todayVisits = 0;
+            stats.todayDownloads = 0;
+            stats.lastVisitDate = today;
+        }
+        
+        // 兼容旧数据：没有访客ID则生成
+        if (!stats.visitorId) {
+            stats.visitorId = generateVisitorId();
+        }
+    }
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    return stats;
+}
+
+// 记录一次页面访问
+function recordVisit() {
+    let stats = initStats();
+    const today = getTodayDate();
+    
+    stats.totalVisits += 1;
+    stats.todayVisits += 1;
+    stats.lastVisitDate = today;
+    
+    // 统计独立访客（本地维度）
+    if (!localStorage.getItem('ntvu_visitor_mark')) {
+        stats.uniqueVisitors += 1;
+        localStorage.setItem('ntvu_visitor_mark', stats.visitorId);
+    }
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    
+    // 【后端对接入口】取消注释并修改接口地址即可上报访问数据
+    // fetch('/api/stats/visit', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //         visitorId: stats.visitorId,
+    //         timestamp: Date.now(),
+    //         userAgent: navigator.userAgent
+    //     })
+    // }).catch(() => {});
+    
+    return stats;
+}
+
+// 记录一次下载行为（点击下载/复制链接均触发）
+function recordDownload() {
+    let stats = initStats();
+    const today = getTodayDate();
+    
+    stats.totalDownloads += 1;
+    stats.todayDownloads += 1;
+    stats.lastVisitDate = today;
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    
+    // 【后端对接入口】取消注释并修改接口地址即可上报下载数据
+    // fetch('/api/stats/download', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //         visitorId: stats.visitorId,
+    //         timestamp: Date.now(),
+    //         downloadType: isWechat() ? 'copy_link' : 'direct_download'
+    //     })
+    // }).catch(() => {});
+    
+    return stats;
+}
+
+// 格式化数字（超过1000显示为1.2k，超过10000显示为1.2w）
+function formatNumber(num) {
+    if (num >= 100000) {
+        return (num / 10000).toFixed(1) + 'w';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+}
+
+// 渲染统计数据到页面（带动画效果）
+function renderStats() {
+    const stats = initStats();
+    const elements = ['totalVisits', 'todayVisits', 'totalDownloads', 'todayDownloads'];
+    
+    elements.forEach(id => {
+        const el = document.getElementById(id);
+        el.textContent = formatNumber(stats[id]);
+        // 触发数字跳动动画
+        el.classList.remove('count-animate');
+        void el.offsetWidth; // 强制重绘
+        el.classList.add('count-animate');
+    });
+}
+
+// ==================== 原有功能函数 ====================
+// 判断是否在微信内置浏览器
+function isWechat() {
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.indexOf('micromessenger') !== -1;
+}
+
+// 处理下载按钮点击
+function handleDownloadClick(event) {
+    recordDownload();
+    renderStats();
+    // 允许默认跳转行为
+}
+
+// 渲染下载区域
+function renderDownloadArea() {
+    const area = document.getElementById('downloadArea');
+    if (isWechat()) {
+        // 微信环境：显示复制链接按钮
+        area.innerHTML = `
+            <button id="copyBtn" 
+                    class="flex items-center justify-center gap-3 bg-blue-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg w-full active:bg-blue-700 transition-colors">
+                <i class="fa fa-link text-2xl"></i>
+                复制下载链接
+            </button>
+            <p class="text-center text-xs text-gray-500 mt-2">
+                👉 复制后，请在手机浏览器（QQ/Chrome/UC）中粘贴打开
+            </p>
+            <p class="text-center text-xs text-red-500 mt-1">
+                微信内无法直接下载，需跳转浏览器安装
+            </p>
+        `;
+        // 绑定复制事件
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(APK_URL)
+                .then(() => {
+                    alert('✅ 下载链接已复制！请打开浏览器粘贴下载~');
+                    recordDownload();
+                    renderStats();
+                })
+                .catch(() => {
+                    alert('❌ 复制失败，请手动复制：' + APK_URL);
+                    recordDownload();
+                    renderStats();
+                });
+        });
+    } else {
+        // 非微信环境：直接下载按钮
+        area.innerHTML = `
+            <a href="${APK_URL}" 
+               onclick="handleDownloadClick(event)"
+               class="flex items-center justify-center gap-3 bg-blue-600 text-white text-lg font-bold py-4 rounded-xl shadow-lg w-full active:bg-blue-700 transition-colors">
+                <i class="fa fa-android text-2xl"></i>
+                立即下载职大校园墙
+            </a>
+            <p class="text-center text-xs text-gray-500 mt-2">
+                适用于 Android 6.0 以上 • 安装提示风险请选择【继续安装】
+            </p>
+        `;
+    }
+}
+
+// 页面加载完成后执行
+window.addEventListener('load', () => {
+    renderDownloadArea();
+    recordVisit();
+    renderStats();
+});
+</script>
+</body>
+</html>
